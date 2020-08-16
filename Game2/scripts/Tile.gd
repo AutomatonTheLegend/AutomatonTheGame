@@ -7,10 +7,10 @@ var background
 var occupant
 var position
 
-func build(position,background_type,occupant_type):
+func build(position,background_type,occupant_type,turn):
 	self.position=position
 	background=Background.new()
 	background.build(background_type)
 	occupant=Occupant.new()
-	occupant.build(occupant_type)
+	occupant.build(occupant_type,turn)
 	

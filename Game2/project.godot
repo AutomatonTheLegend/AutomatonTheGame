@@ -15,7 +15,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Game2"
+config/name="AutomatonTheGameAlpha"
 run/main_scene="res://scenes/MainScene.tscn"
 config/icon="res://textures/icon.png"
 

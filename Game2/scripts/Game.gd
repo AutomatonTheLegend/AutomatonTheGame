@@ -1,6 +1,6 @@
 extends Node
 
-enum GameState{NONE,MAIN_MENU,DESIGN_LEVEL,PLAY_LEVEL}
+enum GameState{NONE,MAIN_MENU,DESIGN_LEVEL,PLAY_LEVEL,WINNER_MENU,LOSER_MENU}
 
 var Configuration=load("res://scripts/Configuration.gd")
 var FontManager=load("res://scripts/FontManager.gd")
@@ -14,8 +14,11 @@ var configuration=Configuration.new()
 var game_state=GameState.NONE
 var font_manager=FontManager.new()
 var menu_font
+var game_font
 var font_data
 var main_menu
+var winner_menu
+var loser_menu
 var painter
 var level
 var texture_manager
@@ -28,6 +31,7 @@ var enemies
 var can_switch
 var player_needs_move
 var enemy_index
+var random=RandomNumberGenerator.new()
 
 func build_painter():
 	painter=Painter.new()
@@ -36,9 +40,22 @@ func build_painter():
 func build_main_menu():
 	main_menu=Menu.new()
 	main_menu.game=self
-	main_menu.options.append("CHOOSE LEVEL")
-	main_menu.options.append("DESIGN LEVEL")
+	main_menu.options.append("PLAY RANDOM LEVEL")
 	main_menu.build_rectangles()
+
+func build_winner_menu():
+	winner_menu=Menu.new()
+	winner_menu.game=self
+	winner_menu.options.append("YOU WIN!!!")
+	winner_menu.options.append("GO BACK")
+	winner_menu.build_rectangles()
+
+func build_loser_menu():
+	loser_menu=Menu.new()
+	loser_menu.game=self
+	loser_menu.options.append("YOU LOSE :C")
+	loser_menu.options.append("GO BACK")
+	loser_menu.build_rectangles()
 
 func start(root):
 	configure(root)
@@ -49,8 +66,11 @@ func configure(root):
 	configuration.configure(root.get_tree())
 	font_data=font_manager.load_font_data("dogicapixelbold.ttf")
 	menu_font=font_manager.build_meta(font_data,64)
+	game_font=font_manager.build_meta(font_data,24)
 	build_painter()
 	build_main_menu()
+	build_winner_menu()
+	build_loser_menu()
 	texture_manager=TextureManager.new()
 	texture_manager.build()
 	camera_rectangle=Rect2(Vector2.ZERO,configuration.viewport_size)
@@ -63,7 +83,7 @@ func configure(root):
 	background_types.append("DOWN")
 	background_types.append("LEFT")
 	background_types.append("UP")
-	
+	random.randomize()
 
 func play():
 	print("Playing")
@@ -77,6 +97,10 @@ func draw():
 	match game_state:
 		GameState.MAIN_MENU:
 			main_menu.draw()
+		GameState.WINNER_MENU:
+			winner_menu.draw()
+		GameState.LOSER_MENU:
+			loser_menu.draw()
 		GameState.DESIGN_LEVEL:
 			level.draw()
 		GameState.PLAY_LEVEL:
@@ -102,6 +126,11 @@ func to_level_position(position):
 	var tile_height=camera_rectangle.size.y/level.size.y
 	return Vector2(floor(level_position.x/tile_width),floor(level_position.y/tile_height))
 
+func play_random_level():
+	level=Level.new()
+	level.build_randomly(self)
+	play_level()
+
 func handle_mouse_button_event(event):
 	match game_state:
 		GameState.MAIN_MENU:
@@ -109,10 +138,22 @@ func handle_mouse_button_event(event):
 				if event.button_index==BUTTON_LEFT:
 					var menu_option = main_menu.handle_left_button_pressed(event)
 					match menu_option:
-						"CHOOSE LEVEL":
-							print("CHOOSE LEVEL")
-						"DESIGN LEVEL":
-							design_level()
+						"PLAY RANDOM LEVEL":
+							play_random_level()
+		GameState.WINNER_MENU:
+			if event.pressed:
+				if event.button_index==BUTTON_LEFT:
+					var menu_option = winner_menu.handle_left_button_pressed(event)
+					match menu_option:
+						"GO BACK":
+							show_main_menu()
+		GameState.LOSER_MENU:
+			if event.pressed:
+				if event.button_index==BUTTON_LEFT:
+					var menu_option = loser_menu.handle_left_button_pressed(event)
+					match menu_option:
+						"GO BACK":
+							show_main_menu()
 		GameState.DESIGN_LEVEL:
 			if event.pressed:
 				if event.button_index==BUTTON_LEFT:
@@ -146,7 +187,7 @@ func play_level():
 		level.tiles[0][0].occupant.type=name_to_occupant("PLAYER")
 		player=Vector2(0,0)
 	pointer=player
-	enemies=level.search_enemies()
+	enemies=level.search_enemies_in_order()
 	game_state=GameState.PLAY_LEVEL
 	redraw()
 
@@ -160,7 +201,7 @@ func delete_enemy(position):
 	enemies.erase(position)
 
 func move_enemy(direction):
-	level.remove(enemies[enemy_index])
+	var turn=level.remove(enemies[enemy_index])
 	match direction:
 		"RIGHT":
 			enemies[enemy_index].x+=1
@@ -172,7 +213,7 @@ func move_enemy(direction):
 			enemies[enemy_index].y-=1
 	if level.has_player(enemies[enemy_index]):
 		player=null
-	level.put_enemy(enemies[enemy_index])
+	level.put_enemy(enemies[enemy_index],turn)
 
 func move_player(direction):
 	level.remove(player)
@@ -187,8 +228,9 @@ func move_player(direction):
 			player.y-=1
 	if level.has_enemy(player):
 		delete_enemy(player)
+	if level.is_exit(player):
+		game_state=GameState.WINNER_MENU
 	level.put_player(player)
-	redraw()
 
 
 func try_to_move_right(occupant_type):
@@ -256,7 +298,13 @@ func try_to_move_enemy():
 			try_to_move_left("ENEMY")
 		"UP":
 			try_to_move_up("ENEMY")
-	redraw()
+
+func reset():
+	if player!=null:
+		player_needs_move=true
+		pointer=player
+		enemy_index=0
+		can_switch=true
 
 func iterate():
 	if player_needs_move:
@@ -264,16 +312,16 @@ func iterate():
 		try_to_move_player()
 		if len(enemies)>0:
 			pointer=enemies[enemy_index]
+		else:
+			reset()
 	elif enemy_index<len(enemies):
 		try_to_move_enemy()
 		enemy_index+=1
 		if enemy_index==len(enemies):
-			player_needs_move=true
-			pointer=player
-			enemy_index=0
-			can_switch=true
+			reset()
 		else:
 			pointer=enemies[enemy_index]
+	redraw()
 
 func handle_key_event(event):
 	match game_state:
@@ -291,7 +339,7 @@ func handle_key_event(event):
 				match event.scancode:
 					KEY_SPACE,KEY_ENTER:
 						if player==null:
-							game_state=GameState.MAIN_MENU
+							game_state=GameState.LOSER_MENU
 							redraw()
 							return
 				match event.scancode:
