@@ -1,0 +1,3 @@
+extends Reference
+
+enum Type{MAIN_MENU,DESIGNING,PLAYING,CHOOSING}
