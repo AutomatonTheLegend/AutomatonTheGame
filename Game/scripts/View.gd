@@ -29,7 +29,15 @@ func draw():
 			else:
 				var texture=game.texture_manager.textures["BACKGROUND"]
 				game.root.draw_texture_rect(texture,drectangle,false)
-				var tile=level.tiles[x+pos.x][y+pos.y]
-				if tile.occupant!=null:
-					texture=game.texture_manager.textures["OCCUPANTS"][occupant_meta.names[tile.occupant.type]]
+				var occupant=level.tiles[x+pos.x][y+pos.y].occupant
+				if occupant!=null:
+					var type=occupant_meta.names[occupant.type]
+					match type:
+						"LED":
+							if occupant.charge=="NEGATIVE":
+								texture=game.texture_manager.textures["OCCUPANTS"]["LED"]
+							else:
+								texture=game.texture_manager.textures["OCCUPANTS"]["LED_ON"]
+						_:
+							texture=game.texture_manager.textures["OCCUPANTS"][type]
 					game.root.draw_texture_rect(texture,drectangle,false)

@@ -22,6 +22,28 @@ func get_player():
 					return tile.occupant
 	return null
 
+func get_leds():
+	var occupant_meta=game.game_state.special.occupant_meta
+	var leds=[]
+	for x in range(size.x):
+		for y in range(size.y):
+			var tile=tiles[x][y]
+			if tile.occupant!=null:
+				if occupant_meta.names[tile.occupant.type]=="LED":
+					leds.append(tile.occupant)
+	return leds
+
+func get_sources():
+	var occupant_meta=game.game_state.special.occupant_meta
+	var sources=[]
+	for x in range(size.x):
+		for y in range(size.y):
+			var tile=tiles[x][y]
+			if tile.occupant!=null:
+				if occupant_meta.names[tile.occupant.type]=="SOURCE":
+					sources.append(tile.occupant)
+	return sources
+
 func build_tiles():
 	tiles=[]
 	for x in range(size.x):

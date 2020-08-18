@@ -26,9 +26,9 @@ func handle_input(event):
 						1:
 							game.switch_state(game.state_meta.Type.DESIGNING)
 							game.redraw()
-				KEY_DOWN:
+				KEY_DOWN,KEY_S:
 					if menu.move_cursor_down():
 						game.redraw()
-				KEY_UP:
+				KEY_UP,KEY_W:
 					if menu.move_cursor_up():
 						game.redraw()
