@@ -1,5 +1,7 @@
 extends Reference
 
+
+
 var game
 var size
 var tile_size
@@ -7,6 +9,9 @@ var pos
 var rectangle
 var occupant_meta
 var level
+var game_state
+
+
 
 func build(game):
 	self.game=game
@@ -15,7 +20,10 @@ func build(game):
 	rectangle=Rect2(0,0,1024,1024)
 	tile_size=Vector2(rectangle.size.x/size.x,rectangle.size.y/size.y)
 	level=game.game_state.special.level
-	occupant_meta=game.game_state.special.occupant_meta
+	game_state=game.game_state
+	occupant_meta=game_state.special.occupant_meta
+
+
 
 func draw():
 	game.root.draw_rect(game.display,Color(0,0,0))
@@ -41,3 +49,9 @@ func draw():
 						_:
 							texture=game.texture_manager.textures["OCCUPANTS"][type]
 					game.root.draw_texture_rect(texture,drectangle,false)
+				if game_state.type==game.state_meta.Type.DESIGNING:
+					if game_state.special.selection==Vector2(x,y):
+						texture=game.texture_manager.textures["TILE_SELECTION"]
+						game.root.draw_texture_rect(texture,drectangle,false)
+
+
