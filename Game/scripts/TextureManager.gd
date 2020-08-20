@@ -9,6 +9,7 @@ func build():
 	textures["BACKGROUND"]=load("res://textures/BACKGROUND.png")
 	textures["DESIGN_INTERFACE_TILE"]=load("res://textures/DESIGN_INTERFACE_TILE.png")
 	textures["TILE_SELECTION"]=load("res://textures/TILE_SELECTION.png")
+	textures["REMOVE_OCCUPANT_ACTION"]=load("res://textures/REMOVE_OCCUPANT_ACTION.png")
 	textures["OCCUPANTS"]={}
 	textures["OCCUPANTS"]["PLAYER"]=load("res://textures/PLAYER.png")
 	textures["OCCUPANTS"]["SOURCE"]=load("res://textures/SOURCE.png")

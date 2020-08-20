@@ -77,7 +77,21 @@ func build(game,size):
 	self.size=size
 	build_tiles()
 
+func place_occupant(pos,type):
+	var tile=tiles[pos.x][pos.y]
+	if tile.occupant==null:
+		tile.occupant=Occupant.new()
+		tile.occupant.build(type,tile)
+	else:
+		tile.occupant.type=type
 
+func remove_occupant(pos):
+	var tile=tiles[pos.x][pos.y]
+	if tile.occupant==null:
+		return false
+	tile.occupant=null
+	return true
+	
 func switch_occupant(pos):
 	var occupant_meta=game.game_state.special.occupant_meta
 	var tile=tiles[pos.x][pos.y]
