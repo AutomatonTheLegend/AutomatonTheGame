@@ -37,8 +37,8 @@ func build(manager,size):
 func add_commands():
 	commands=[]
 	add_command("remove",null,"remove")
-	for i in range(len(occupant_meta.names)):
-		add_command("place",occupant_meta.names[i],occupant_meta.names[i])
+	for name in occupant_meta.names:
+		add_command("place",name,name)
 
 func add_command(name,data,texture):
 	commands.append({"name":name,"data":data,"texture":manager.texture(texture)})
@@ -58,6 +58,14 @@ func input(event):
 							match action.special.name:
 								"select":
 									selection=action.special.data
+									visual_update()
+									painter.update()
+								"remove":
+									level.remove(selection+view.pos)
+									visual_update()
+									painter.update()
+								"place":
+									level.place(selection+view.pos,action.special.data)
 									visual_update()
 									painter.update()
 

@@ -15,7 +15,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="LogicTheGame"
+config/name="LogicTheGameOld1"
 run/main_scene="res://Scene.tscn"
 config/icon="res://textures/icon.png"
 

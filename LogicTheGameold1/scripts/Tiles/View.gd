@@ -26,3 +26,6 @@ func visual_update():
 				if tile.occupant==null:
 					var texture=manager.textures.list["tile"]
 					visuals.texture(x,y,texture,Color.white)
+				else:
+					var texture=manager.texture(tile.occupant.type)
+					visuals.texture(x,y,texture,Color.white)
