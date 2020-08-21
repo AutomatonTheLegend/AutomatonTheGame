@@ -9,12 +9,37 @@ var state
 var painter
 var textures
 
+func list_files_in_directory(path,extension):
+	var files = []
+	var dir = Directory.new()
+	dir.open(path)
+	dir.list_dir_begin()
+
+	while true:
+		var file = dir.get_next()
+		if file == "":
+			break
+		elif not file.begins_with("."):
+			if file.get_extension()==extension:
+				files.append(file.get_basename())
+
+	dir.list_dir_end()
+
+	return files
+
+func load_textures():
+	var files=list_files_in_directory("res://textures","png")
+	for file in files:
+		textures.load_texture(file)
+
 func build(root):
 	self.root=root
 	painter=Painter.new()
 	painter.build(self)
 	textures=Textures.new()
 	textures.build()
+	load_textures()
+
 
 func texture(name):
 	return textures.list[name]

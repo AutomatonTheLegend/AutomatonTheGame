@@ -30,15 +30,18 @@ func build(manager,size):
 	actions.build(manager)
 	occupant_meta=OccupantMeta.new()
 	occupant_meta.build()
-
+	add_commands()
 	action_update()
 	visual_update()
 
 func add_commands():
 	commands=[]
+	add_command("remove",null,"remove")
+	for i in range(len(occupant_meta.names)):
+		add_command("place",occupant_meta.names[i],occupant_meta.names[i])
 
-func add_command(name,data):
-	commands.append({"name":name,"data":data})
+func add_command(name,data,texture):
+	commands.append({"name":name,"data":data,"texture":manager.texture(texture)})
 
 func draw(painter):
 	pass
@@ -63,8 +66,8 @@ func action_update():
 		for y in range(8):
 			actions.special(x,y,"select",Vector2(x,y))
 	var i=0
-	for x in range(8):
-		for y in range(8):
+	for y in range(8):
+		for x in range(8):
 			if i<len(commands):
 				var command=commands[i] 
 				actions.special(x+8,y,command["name"],command["data"])
@@ -76,3 +79,15 @@ func visual_update():
 	visuals.clear(Color.white)
 	view.visual_update()
 	visuals.top(selection.x,selection.y,manager.texture("selection"))
+	var i=0
+	for x in range(8):
+		for y in range(8):
+			visuals.texture(x+8,y,manager.texture("command"),Color.white)
+	for y in range(8):
+		for x in range(8):
+			if i<len(commands):
+				var command=commands[i] 
+				var visual_rectangle=visuals.array[x+8][y].rectangle
+				var rectangle=Rect2(visual_rectangle.position+visual_rectangle.size/4,(visual_rectangle.size*3)/4)
+				visuals.sub(x+8,y,{"texture":command["texture"],"rectangle":rectangle})
+				i+=1

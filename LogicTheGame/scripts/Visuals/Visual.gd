@@ -7,9 +7,11 @@ var VisualChar=load("res://scripts/Visuals/VisualChar.gd")
 var rectangle
 var special
 var tops
+var subs
 
 func build(rectangle,type,special_data):
 	tops=[]
+	subs=[]
 	self.rectangle=rectangle
 	match type:
 		"color":
@@ -24,5 +26,7 @@ func build(rectangle,type,special_data):
 
 func draw(painter):
 	special.draw(painter)
-	for i in range(len(tops)):
-		painter.texture(tops[i],rectangle)
+	for sub in subs:
+		painter.texture(sub["texture"],sub["rectangle"])
+	for top in tops:
+		painter.texture(top,rectangle)

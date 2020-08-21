@@ -34,6 +34,9 @@ func color(x,y,color):
 func top(x,y,texture):
 	array[x][y].tops.append(texture)
 
+func sub(x,y,sub):
+	array[x][y].subs.append(sub)
+
 func texture(x,y,texture,color):
 	var visual=Visual.new()
 	visual.build(get_rectangle(x,y),"texture",[texture,color])

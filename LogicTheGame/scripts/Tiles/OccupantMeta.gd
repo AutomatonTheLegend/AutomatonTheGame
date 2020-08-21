@@ -3,13 +3,13 @@ extends Reference
 var directions
 var names
 
-func add_ocupant(name,directions):
+func add_ocupant(name,direction_array):
 	names.append(name)
-	directions[name]=directions
+	directions[name]=direction_array
 
 func build():
 	names=[]
-	directions
+	directions={}
 	add_ocupant("cable_down_left",["down","left"])
 	add_ocupant("cable_down_left_up",["down","left","up"])
 	add_ocupant("cable_down_up",["down","up"])
