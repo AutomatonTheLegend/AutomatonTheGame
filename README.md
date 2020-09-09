@@ -1,2 +1,2 @@
-# AutomatonTheGame
-Game
+# AutomatonTheProject
+Project
