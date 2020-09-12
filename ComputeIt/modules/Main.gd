@@ -103,6 +103,7 @@ func draw(input):
 				"color":
 					draw_visual_color({"element":element})
 				"character":
+					draw_visual_color({"element":element})
 					draw_visual_character({"element":element})
 
 func rectangle_to_godot(input):
@@ -143,6 +144,7 @@ func build_procedure(input):
 func build_menu(input):
 	var menu={}
 	menu["options"]=input["options"]
+	menu["font"]=input["font"]
 	return menu
 
 func build_state(input):
@@ -177,7 +179,7 @@ func draw_text_centered(input):
 	draw_text({"font":input["font"],"position":pos,"string":input["string"]})
 
 func draw_visual_character(input):
-	draw_text_centered({"rectangle":input["element"]["rectangle"],"string":input["element"]["visual"]["character"],"font":input["font"]})
+	draw_text_centered({"rectangle":input["element"]["rectangle"],"string":input["element"]["visual"]["character"],"font":input["element"]["visual"]["font"]})
 
 func visual_character(input):
 	var visual=input["element"]["visual"]
@@ -191,10 +193,10 @@ func visual_string(input):
 	for character in input["string"]:
 		if i>=input["length"]:
 			return
-		var x=input["position"]["x"]+1
+		var x=input["position"]["x"]
 		var y=input["position"]["y"]
 		#var rectangle=input["visuals"]["array"][x][y]["rectangle"]
-		visual_character({"color":input["color"],"character":character,"element":input["visuals"]["array"][x][y],"font":input["font"]})
+		visual_character({"color":input["color"],"character":character,"element":input["visuals"]["array"][x+i][y],"font":input["font"]})
 		i+=1
 
 func menu_update_visuals(input):
